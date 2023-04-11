@@ -1,15 +1,12 @@
 <template>
-  <ChatBox/>
+  <router-view />
 </template>
 
 <script>
-import ChatBox from './components/Chat.vue';
+
 
 export default {
-  name: 'App',
-  components: {
-    ChatBox
-  }
+  name: 'App'
 }
 </script>
 
