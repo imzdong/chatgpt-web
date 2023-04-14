@@ -2,13 +2,9 @@
   <div class="login_container">
     <div class="login_box">
       <!-- 头像区域 -->
-      <!--
-      <div class="avatar_box">
-        <img src="../assets/logo.png" alt="" />
-      </div>
-      -->
+      
       <!-- 登录表单区域 -->
-      <el-form label-width="0px">
+      <el-form label-width="0px" class="login_form">
         <!-- 用户名 -->
         <el-form-item>
           <el-input v-model="username" placeholder="请输入您的账号"></el-input>
@@ -18,7 +14,7 @@
           <el-input v-model="password" placeholder="请输入您的密码"></el-input>
         </el-form-item>
         <!-- 按钮区域 -->
-        <el-form-item>
+        <el-form-item class="login_btn">
           <el-button type="primary" @click="handleSubmit">登录</el-button>
           <el-button type="info">重置</el-button>
         </el-form-item>
@@ -44,7 +40,7 @@ export default {
           }).then(response => {
             if (response.data.token) {
               localStorage.setItem('token', response.data.token)
-              this.$router.push({ path: '/home' });
+              this.$router.push({ path: '/chat' });
             } else {
               this.$alert('用户名或密码错误', '登录失败', {
                 confirmButtonText: 'ok'
@@ -79,15 +75,15 @@ export default {
   /** 距离左则50% */
   left: 50%;
   /** 上面距离50%*/
-  top: 50%;
+  top: 40%;
   /** 进行位移，并且在横轴上位移-50%，纵轴也位移-50%*/
   transform: translate(-50%, -50%);
 }
 
 .login_form {
   position: absolute;
-  bottom: 0;
-  width: 100%;
+  bottom: 20%;
+  width: 95%;
   padding: 0 20px;
   box-sizing: border-box;
 }
@@ -96,7 +92,8 @@ export default {
   /** 设置弹性布局*/
   display: flex;
   /** 横轴上尾部对齐*/
-  justify-content: flex-end;
+  justify-content: center;
+
 }
 </style>
 

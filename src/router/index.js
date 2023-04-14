@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../components/Login.vue';
-import HomeView from '../components/Home.vue';
+import ChatView from '../components/Chat.vue';
 
 
 const routes =  [
   {
     path: '/',
-    redirect: '/home',
+    redirect: '/chat',
   },
   {
     path: '/login',
@@ -14,9 +14,9 @@ const routes =  [
     component: LoginView,
   },
   {
-    path: '/home',
-    name: 'Home',
-    component: HomeView,
+    path: '/chat',
+    name: 'chat',
+    component: ChatView,
     meta: {
       requiresAuth: true,
     },
