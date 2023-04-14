@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../components/Login.vue';
-import ChatBox from '../components/Chat.vue';
+import HomeView from '../components/Home.vue';
 
 
 const routes =  [
@@ -16,7 +16,7 @@ const routes =  [
   {
     path: '/home',
     name: 'Home',
-    component: ChatBox,
+    component: HomeView,
     meta: {
       requiresAuth: true,
     },
@@ -35,6 +35,7 @@ const router = createRouter({
   // 全局前置守卫
   router.beforeEach((to, from, next) => {
     const isAuthenticated = localStorage.getItem('token')
+    console.log(isAuthenticated);
     if (to.matched.some(record => record.meta.requiresAuth)) {
       if (!isAuthenticated) {
         next('/login')
