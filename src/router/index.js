@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import LoginView from '../components/Login.vue';
-import ChatView from '../components/Chat.vue';
+import LoginView from '../views/Login.vue';
+import ChatView from '../views/Chat.vue';
 
 
 const routes =  [

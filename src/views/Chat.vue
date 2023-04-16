@@ -12,8 +12,8 @@
   </template>
 
 <script>
-import ChatNav from "./ChatNav.vue";
-import ChatRoom from "./ChatRoom.vue";
+import ChatNav from "../components/ChatNav.vue";
+import ChatRoom from "../components/ChatRoom.vue";
 
 export default {
   name: "ChatView",

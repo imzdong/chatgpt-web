@@ -49,6 +49,15 @@ class ChatMessage {
         localMessages: this.messages
       };
     },
+    created() {
+    // 创建WebSocket连接
+    this.socket = new WebSocket('ws://localhost:3000')
+    // 监听WebSocket事件
+    this.socket.addEventListener('message', event => {
+      const message = JSON.parse(event.data)
+      this.messages.push(message)
+    })
+  },
     methods: {
       send() {
         if (this.inputText) {
