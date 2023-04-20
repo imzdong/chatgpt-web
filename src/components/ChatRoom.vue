@@ -1,145 +1,122 @@
 <template>
-    <div class="chat-room">
-      <div class="message-list">
-        <div
-          v-for="(message, index) in localMessages"
-          :key="index"
-          class="message-item"
-          :class="{ self: message.sender === selfUser }"
-        >
-          <div class="message-sender">{{ message.sender }}</div>
+  <div class="conversation-detail">
+    <div class="message-list">
+      <div v-for="(message, index) in messages" :key="index" class="message-item">
+        <div class="message-header">
+          <div class="message-username">{{ message.username }}</div>
           <div class="message-time">{{ message.time }}</div>
-          <div class="message-content">{{ message.content }}</div>
         </div>
-      </div>
-      <div class="message-input">
-        <input v-model="inputText" type="text" placeholder="输入消息..." />
-        <button @click="send">发送</button>
+        <div class="message-content">{{ message.content }}</div>
       </div>
     </div>
-  </template>
-  
-  <script>
+    <div class="message-input">
+      <el-input
+        v-model="newMessage"
+        placeholder="请输入消息"
+        type="textarea"
+        autosize
+        :rows="3"
+      ></el-input>
+      <el-button class="send-button" type="primary" @click="sendMessage">发送</el-button>
+    </div>
+  </div>
+</template>
 
-class ChatMessage {
-    constructor({ sender, receiver, content, time }) {
-      this.sender = sender;
-      this.receiver = receiver;
-      this.content = content;
-      this.time = time;
-    }
-  }
+<script>
+import { reactive, ref, onMounted  } from 'vue';
+import { getConversationMessages, sendApiMessage } from '../api/conversations';
 
-  
-  export default {
-    name: "ChatRoom",
-    props: {
-      selfUser: {
-        type: String,
-        required: true,
-      },
-      messages: {
-        type: Array,
-        required: true,
-      },
+export default {
+  name: 'ConversationDetail',
+  props: {
+    conversationId: {
+      type: String,
+      required: true,
     },
-    data() {
-      return {
-        inputText: "",
-        localMessages: this.messages
-      };
-    },
-    created() {
-    // 创建WebSocket连接
-    this.socket = new WebSocket('ws://localhost:3000')
-    // 监听WebSocket事件
-    this.socket.addEventListener('message', event => {
-      const message = JSON.parse(event.data)
-      this.messages.push(message)
-    })
   },
-    methods: {
-      send() {
-        if (this.inputText) {
-          const message = new ChatMessage({
-            sender: this.selfUser,
-            receiver: "",
-            content: this.inputText,
-            time: new Date().toLocaleTimeString(),
-          });
-          this.localMessages.push(message);
-          this.inputText = "";
-        }
-      },
-    },
-  };
-  </script>
-  
-  <style scoped>
-  .chat-room {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .message-list {
-    flex-grow: 1;
-    overflow: auto;
-    padding: 8px;
-  }
-  
-  .message-item {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 8px;
-  }
-  
-  .message-item.self {
-    align-self: flex-end;
-  }
-  
-  .message-sender {
-    font-size: 12px;
-    color: gray;
-  }
-  
-  .message-time {
-    font-size: 10px;
-    color: #aaa;
-  }
-  
-  .message-content {
-    background-color: #f6f6f6;
-    padding: 4px 8px;
-    border-radius: 4px;
-  }
-  .message-input {
-    display: flex;
-    align-items: center;
-    padding: 8px;
-    background-color: #f6f6f6;
-  }
-  
-  input[type="text"] {
-    flex-grow: 1;
-    border: none;
-    outline: none;
-    background-color: transparent;
-  }
-  
-  button {
-    margin-left: 8px;
-    background-color: #0095ff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 8px 12px;
-    cursor: pointer;
-    font-size: 14px;
-    outline: none;
-  }
-  
-  button:hover {
-    background-color: #0085cc;
-  }
-  </style>
+  setup(props) {
+    const messages = reactive([]);
+    const newMessage = ref('');
+
+    // 获取会话消息列表
+    const fetchMessages = async () => {
+      try {
+        const data = await getConversationMessages(props.conversationId);
+        messages.push(data.messages);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    // 发送消息
+    const sendMessage = async () => {
+      try {
+        const data = await sendApiMessage(props.conversationId, newMessage.value);
+        messages.push(data.message);
+        newMessage.value = '';
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    // 在组件挂载时获取会话消息列表
+    onMounted(() => {
+      fetchMessages();
+    });
+
+    return {
+      messages,
+      newMessage,
+      sendMessage,
+    };
+  },
+};
+</script>
+
+<style scoped>
+.conversation-detail {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.message-list {
+  flex: 1;
+  overflow-y: scroll;
+  padding: 20px;
+}
+
+.message-item {
+  margin-bottom: 20px;
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.message-username {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.message-time {
+  font-size: 12px;
+  color: #999;
+}
+
+.message-content {
+  font-size: 14px;
+}
+
+.message-input {
+  display: flex;
+  margin-top: 20px;
+}
+
+.send-button {
+  margin-left: 10px;
+}
+</style>
