@@ -1,51 +1,50 @@
 <template>
-    <div>
-      <el-container class="home-container">
-        <el-aside width="200px" class="left-nav">
-            <ChatNav/>
-        </el-aside>
-        <el-main class="chat-content">
-          <ChatRoom/>
-        </el-main>
-      </el-container>
-    </div>
-  </template>
+  <el-container>
+    <el-header>Header</el-header>
+    <el-container>
+      <el-aside>Aside</el-aside>
+      <el-main>Main</el-main>
+    </el-container>
+  </el-container>
+</template>
 
 <script>
-import ChatNav from "../components/ChatNav.vue";
-import ChatRoom from "../components/ChatRoom.vue";
 
 export default {
   name: "ChatView",
   data() {
     return {
-      logining: false
     };
   },
   methods: {
-    handleSubmit(){
-    }
   },
-  components:{
-    ChatNav,
-    ChatRoom
+  components: {
   }
 };
 </script>  
 
 <style>
-
-.home-container{
-  background-color: #f3f4f5;
-  height: 100vh;
+.el-container {
+  height: 100%;
 }
 
-.left-nav{
-  background-color: #f4f8fc;
+.el-header {
+  background-color: #b3c0d1;
+  color: #333;
+  text-align: center;
+  line-height: 60px;
 }
 
-.chat-content{
-  background-color: #e3effa;
+.el-aside {
+  background-color: #d3dce6;
+  color: #333;
+  text-align: center;
+  line-height: 200px;
 }
 
-</style>
+.el-main {
+  background-color: #e9eef3;
+  color: #333;
+  text-align: center;
+  line-height: 160px;
+}</style>
