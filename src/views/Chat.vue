@@ -1,10 +1,12 @@
 <template>
 	<div>
+		<add-room @child-click="addRoom" ref="childComponent" />
 		<vue-advanced-chat
 			height="calc(100vh - 20px)"
 			:current-user-id="currentUserId"
 			:rooms="JSON.stringify(rooms)"
 			:rooms-loaded="true"
+			@add-room="triggerChildClick"
 			:messages="JSON.stringify(messages)"
 			:messages-loaded="messagesLoaded"
 			@send-message="sendMessage($event.detail[0])"
@@ -14,13 +16,18 @@
 </template>
 
 <script>
-import { register } from 'vue-advanced-chat'
+// import { register } from '../../vue-advanced-chat/dist/vue-advanced-chat.es.js'
+
+import AddRoom from '@/components/ChatRoom.vue';
 // https://github.com/antoine92190/vue-advanced-chat
 // import { register } from '../../vue-advanced-chat/dist/vue-advanced-chat.es.js'
-register()
+//register()
 
 export default {
   name: "ChatView",
+  components:{
+	AddRoom
+  },
 	data() {
 		return {
 			currentUserId: '1234',
@@ -42,6 +49,8 @@ export default {
 
 	methods: {
 		fetchMessages({ options = {} }) {
+			console.log(options)
+			/** 
 			setTimeout(() => {
 				if (options.reset) {
 					this.messages = this.addMessages(true)
@@ -51,6 +60,7 @@ export default {
 				}
 				// this.addNewMessage()
 			})
+			*/
 		},
 
 		addMessages(reset) {
@@ -96,7 +106,19 @@ export default {
 					}
 				]
 			}, 2000)
-		}
+		},
+
+		addRoom(newRoom){
+			console.log("add room")
+			console.log(newRoom)
+			this.rooms.push(newRoom)
+		},
+		triggerChildClick() {
+			console.log("triggerChild")
+      // 通过 $refs 获取子组件实例，并调用子组件的方法
+      this.$refs.childComponent.showFormDialog();
+    }
+
 	}
 }
 </script>
