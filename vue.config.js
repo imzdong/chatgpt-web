@@ -20,7 +20,19 @@ module.exports = defineConfig({
         // additionalData: `@import "@/styles/variables.scss";`
       }
     }
-  }
+  },
+  chainWebpack: (config) => {
+    // 添加对 vue-advanced-chat 的自定义元素支持
+    config.module
+      .rule('vue')
+      .use('vue-loader')
+      .tap((options) => {
+        options.compilerOptions = {
+          isCustomElement: (tag) => tag === 'vue-advanced-chat',
+        };
+        return options;
+      });
+  },
 })
 
 /**
