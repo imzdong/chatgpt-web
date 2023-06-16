@@ -2,7 +2,7 @@
     <div>
       <!-- 表单弹窗 -->
       <el-dialog
-        :visible="formVisible"
+        v-model="dialogVisible"
         title="AddRoom"
         @close="closeFormDialog"
       >
@@ -24,7 +24,7 @@
     name:'AddRoom',
     data() {
       return {
-        formVisible: false,
+        dialogVisible: false,
         form: {
           roomName: ''
         }
@@ -33,11 +33,11 @@
     methods: {
       showFormDialog() {
         console.log("show child")
-        this.formVisible = true;
-        console.log(this.formVisible)
+        this.dialogVisible = true;
+        console.log(this.dialogVisible)
       },
       closeFormDialog() {
-        this.formVisible = false;
+        this.dialogVisible = false;
       },
       submitForm() {
         // 处理表单提交逻辑，例如将数据发送到服务器或添加到聊天室列表
