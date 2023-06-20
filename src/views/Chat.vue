@@ -1,17 +1,10 @@
 <template>
 	<div>
 		<add-room @child-click="addRoom" ref="childComponent" />
-		<vue-advanced-chat
-			height="calc(100vh - 20px)"
-			:current-user-id="currentUserId"
-			:rooms="JSON.stringify(rooms)"
-			:rooms-loaded="true"
-			@add-room="triggerChildClick"
-			:messages="JSON.stringify(messages)"
-			:messages-loaded="messagesLoaded"
-			@send-message="sendMessage($event.detail[0])"
-			@fetch-messages="fetchMessages($event.detail[0])"
-		/>
+		<vue-advanced-chat height="calc(100vh - 20px)" :current-user-id="currentUserId" :rooms="JSON.stringify(rooms)"
+			:rooms-loaded="true" @add-room="triggerChildClick" :messages="JSON.stringify(messages)"
+			:messages-loaded="messagesLoaded" @send-message="sendMessage($event.detail[0])"
+			@fetch-messages="fetchMessages($event.detail[0])" />
 	</div>
 </template>
 
@@ -24,10 +17,14 @@ import AddRoom from '@/components/ChatRoom.vue';
 //register()
 
 export default {
-  name: "ChatView",
-  components:{
-	AddRoom
-  },
+	name: "ChatView",
+	components: {
+		AddRoom
+	},
+	created() {
+		// 在 created 钩子函数中初始化数据
+		this.initializeData();
+	},
 	data() {
 		return {
 			currentUserId: '1234',
@@ -48,6 +45,32 @@ export default {
 	},
 
 	methods: {
+
+		initializeData() {
+			const userId = 'dcb39623-153f-4647-8b7a-81e5c5f78d19';
+			this.$axios.get('/ai/chat/user/' + userId).then(response => {
+				/* response.data.forEach((num) => {
+					
+				}); */
+				for (let i = 0; i < response.data.length; i++) {
+					const room = response.data[i];
+					console.log(response.data[i]);
+					this.rooms[i] = {
+						roomId: room.id,
+						roomName: room.name,
+						model: room.model,
+						avatar: 'https://www.flaticon.com/free-icons/english-bulldog',
+						users: [
+							{ _id: room.userId, username: 'dong' }
+						]
+					};
+				}
+
+			}).catch(error => {
+				console.error(error);
+			});
+		},
+
 		fetchMessages({ options = {} }) {
 			console.log(options)
 			/** 
@@ -108,16 +131,16 @@ export default {
 			}, 2000)
 		},
 
-		addRoom(newRoom){
+		addRoom(newRoom) {
 			console.log("add room")
 			console.log(newRoom)
 			this.rooms.push(newRoom)
 		},
 		triggerChildClick() {
 			console.log("triggerChild")
-      // 通过 $refs 获取子组件实例，并调用子组件的方法
-      this.$refs.childComponent.showFormDialog();
-    }
+			// 通过 $refs 获取子组件实例，并调用子组件的方法
+			this.$refs.childComponent.showFormDialog();
+		}
 
 	}
 }

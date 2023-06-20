@@ -30,6 +30,9 @@
   </template>
   
   <script>
+
+  import { v4 as uuidv4 } from 'uuid';
+
   export default {
     name:'AddRoom',
     data() {
@@ -56,6 +59,9 @@
         this.dialogVisible = false;
       },
       submitForm() {
+        // 生成 UUID
+const uuid = uuidv4();
+console.log(uuid);
         // 处理表单提交逻辑，例如将数据发送到服务器或添加到聊天室列表
         const newRoom = {
           roomId: Math.random(),
@@ -63,8 +69,7 @@
           model: this.form.model,
           avatar: 'https://www.flaticon.com/free-icons/english-bulldog',
 					users: [
-						{ _id: '1234', username: 'John Doe' },
-						{ _id: '4321', username: 'John Snow' }
+						{ _id: uuid, username: 'dong' }
 					]
         };
         this.$emit('child-click', newRoom);

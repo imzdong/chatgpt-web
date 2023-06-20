@@ -4,12 +4,12 @@ module.exports = defineConfig({
   transpileDependencies: true,
   devServer: {
     proxy: {
-      '/api': {
-        target: "http://localhost:8086",
+      '/ai': {
+        target: "http://localhost:9088",
         changeOrigin: true,
         logLevel: 'debug',
         pathRewrite: {
-          '^/api': '/chat'
+          '^/ai': '/ai'
         }
       }
     }
