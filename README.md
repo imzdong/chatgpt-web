@@ -97,3 +97,6 @@ package-lock.json 文件是 Node.js 项目中的一个自动生成的文件，�
 * npm install axios@latest
 * npm install element-plus --save
 * npm install vue-router@4
+* npm install sass --save-dev
+* npm install eslint-plugin-vue
+* npm install uuid
