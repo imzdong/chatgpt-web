@@ -47,8 +47,7 @@ export default {
 	methods: {
 
 		initializeData() {
-			const userId = 'dcb39623-153f-4647-8b7a-81e5c5f78d19';
-			this.$axios.get('/ai/chat/user/' + userId).then(response => {
+			this.$axios.get('/ai/chat/user/dcb39623-153f-4647-8b7a-81e5c5f78d19').then(response => {
 				/* response.data.forEach((num) => {
 					
 				}); */

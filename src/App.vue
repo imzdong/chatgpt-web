@@ -4,7 +4,6 @@
 
 <script>
 
-
 export default {
   name: 'App'
 }
@@ -12,7 +11,6 @@ export default {
 
 
 <style>
-
 /* 网页的布局占满全屏 移除滚屏*/
 html,
 body,
