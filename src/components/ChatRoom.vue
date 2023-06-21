@@ -34,9 +34,11 @@ export default {
         model: '',
       },
       modelList: [
-        { label: 'gpt-3.5', value: 'gpt-3.5-v' },
-        { label: 'gpt-4', value: 'gpt-4-v' },
-        { label: 'code', value: 'code-v' },
+        { label: 'gpt-3.5-turbo', value: 'gpt-3.5-turbo' },
+        { label: 'gpt-4', value: 'gpt-4' },
+        { label: 'code-davinci-002', value: 'code-davinci-002' },
+        { label: 'DALL·E', value: 'DALL·E' },
+        { label: 'whisper-1', value: 'whisper-1' },
       ],
     };
   },
@@ -62,11 +64,19 @@ export default {
       }).then(response => {
         const room = response.data;
         console.log(room);
+        const avatars = new Map([
+					['gpt-3.5-turbo', 'imgs/gpt-3.5.png'],
+					['gpt-4', 'imgs/gpt-4.png'],
+					['code-davinci-002', 'imgs/code.png'],
+					['DALL·E', 'imgs/dall.png'],
+					['whisper-1', 'imgs/dall.png'],
+					// ...
+				]);
         const newRoom = {
           roomId: room.id,
           roomName: room.name,
           model: room.model,
-          avatar: 'https://www.flaticon.com/free-icons/english-bulldog',
+          avatar: avatars[room.model] ? avatars[room.model] : 'imgs/gpt-3.5.png',
           users: [
             { _id: room.userId, username: room.userName },
             { _id: room.botUserId, username: room.botName }

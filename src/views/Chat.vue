@@ -1,16 +1,16 @@
 <template>
 	<div>
-		<add-room @child-click="addRoom" ref="childComponent" />
+		<add-room @child-click="parentAddRoom" ref="childComponent" />
 		<vue-advanced-chat height="calc(100vh - 20px)" :current-user-id="currentUserId" :rooms="JSON.stringify(rooms)"
 			:rooms-loaded="true" @add-room="triggerChildClick" :messages="JSON.stringify(messages)"
 			:messages-loaded="messagesLoaded" @send-message="sendMessage($event.detail[0])"
-			@fetch-messages="fetchMessages($event.detail[0])" />
+			:loadingHistory="loadingHistory" />
 	</div>
 </template>
 
 <script>
 // import { register } from '../../vue-advanced-chat/dist/vue-advanced-chat.es.js'
-
+// @fetch-messages="fetchMessages($event.detail[0])"
 import AddRoom from '@/components/ChatRoom.vue';
 // https://github.com/antoine92190/vue-advanced-chat
 // import { register } from '../../vue-advanced-chat/dist/vue-advanced-chat.es.js'
@@ -27,30 +27,27 @@ export default {
 	},
 	data() {
 		return {
-			currentUserId: '1234',
+			currentUserId: 'dcb39623-153f-4647-8b7a-81e5c5f78d19',
 			rooms: [
-				{
-					roomId: '1',
-					roomName: 'Room 1',
-					avatar: 'https://66.media.tumblr.com/avatar_c6a8eae4303e_512.pnj',
-					users: [
-						{ _id: '1234', username: 'John Doe' },
-						{ _id: '4321', username: 'John Snow' }
-					]
-				}
 			],
 			messages: [],
-			messagesLoaded: false
+			messagesLoaded: true,
+			loadingHistory: false
 		}
 	},
 
 	methods: {
 
 		initializeData() {
-			this.$axios.get('/ai/chat/user/dcb39623-153f-4647-8b7a-81e5c5f78d19').then(response => {
-				/* response.data.forEach((num) => {
-					
-				}); */
+			this.$axios.get('/ai/chat/user/' + this.currentUserId).then(response => {
+				const avatars = new Map([
+					['gpt-3.5-turbo', 'imgs/gpt-3.5.png'],
+					['gpt-4', 'imgs/gpt-4.png'],
+					['code-davinci-002', 'imgs/code.png'],
+					['DALL·E', 'imgs/dall.png'],
+					['whisper-1', 'imgs/dall.png'],
+					// ...
+				]);
 				for (let i = 0; i < response.data.length; i++) {
 					const room = response.data[i];
 					console.log(response.data[i]);
@@ -58,79 +55,96 @@ export default {
 						roomId: room.id,
 						roomName: room.name,
 						model: room.model,
-						avatar: 'https://www.flaticon.com/free-icons/english-bulldog',
+						avatar: avatars[room.model] ? avatars[room.model] : 'imgs/gpt-3.5.png',
 						users: [
-							{ _id: room.userId, username: 'dong' }
+							{ _id: room.userId, username: room.userName },
+							{ _id: room.botUserId, username: room.botName }
 						]
 					};
 				}
-
+				if (this.rooms[0]) {
+					this.loadingHistory = false;
+					this.getMessagesByChatId(this.rooms[0].roomId);
+					this.loadingHistory = true;
+				}
 			}).catch(error => {
 				console.error(error);
 			});
 		},
 
-		fetchMessages({ options = {} }) {
-			console.log(options)
-			/** 
-			setTimeout(() => {
-				if (options.reset) {
-					this.messages = this.addMessages(true)
-				} else {
-					this.messages = [...this.addMessages(), ...this.messages]
-					this.messagesLoaded = true
+		getMessagesByChatId(chatId) {
+			this.$axios.get('/ai/chat/' + chatId + '/messages').then(response => {
+				const chatMessages = response.data.messages;
+				const msgs = []
+				console.log("chatMessages:" + chatMessages.length);
+				if (chatMessages.length > 0) {
+					for (let i = 0; i < chatMessages.length; i++) {
+						const msg = chatMessages[i];
+						const dbDate = new Date(msg.createdDate);
+						msgs.push({
+							_id: i,
+							content: msg.content,
+							senderId: msg.userId,
+							username: msg.userName,
+							date: dbDate.getFullYear()+'-'+(dbDate.getMonth() + 1)+'-'+dbDate.getDay(),
+							timestamp: dbDate.getHours()+':'+(dbDate.getMinutes() + 1)+':'+dbDate.getSeconds()
+						})
+					}
 				}
-				// this.addNewMessage()
-			})
-			*/
-		},
-
-		addMessages(reset) {
-			const messages = []
-
-			for (let i = 0; i < 30; i++) {
-				messages.push({
-					_id: reset ? i : this.messages.length + i,
-					content: `${reset ? '' : 'paginated'} message ${i + 1}`,
-					senderId: '4321',
-					username: 'John Doe',
-					date: '13 November',
-					timestamp: '10:20'
-				})
-			}
-
-			return messages
+				this.messages = msgs;
+			}).catch(error => {
+				console.error(error);
+			});
 		},
 
 		sendMessage(message) {
+			/* 
+			{
+				"content": "123",
+				"files": null,
+				"replyMessage": null,
+				"usersTag": [],
+				"roomId": "b3d61be3-1e3e-4066-93a1-adc0195d5123"
+			}
+			*/
+			console.log(message);
+			const newMsg = {
+				_id: this.messages.length,
+				content: message.content,
+				senderId: this.currentUserId,
+				timestamp: new Date().toString().substring(16, 21),
+				date: new Date().toDateString()
+			}
 			this.messages = [
 				...this.messages,
-				{
+				newMsg
+			]
+			this.loadingHistory = false;
+			this.$axios.post('/ai/chat/' + message.roomId + '/message', {
+				message: message.content,
+				userId: this.currentUserId,
+			}).then(response => {
+				console.log(response.data);
+				const botRes = response.data
+				const botMsg = {
 					_id: this.messages.length,
-					content: message.content,
-					senderId: this.currentUserId,
+					content: botRes.content,
+					senderId: botRes.userId,
 					timestamp: new Date().toString().substring(16, 21),
 					date: new Date().toDateString()
 				}
-			]
-		},
-
-		addNewMessage() {
-			setTimeout(() => {
+				this.loadingHistory = true;
 				this.messages = [
 					...this.messages,
-					{
-						_id: this.messages.length,
-						content: 'NEW MESSAGE',
-						senderId: '1234',
-						timestamp: new Date().toString().substring(16, 21),
-						date: new Date().toDateString()
-					}
+					botMsg
 				]
-			}, 2000)
+			}).catch(error => {
+				console.error(error);
+			});
+
 		},
 
-		addRoom(newRoom) {
+		parentAddRoom(newRoom) {
 			console.log("add room")
 			console.log(newRoom)
 			this.rooms.push(newRoom)
