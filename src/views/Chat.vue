@@ -62,11 +62,12 @@ export default {
 						]
 					};
 				}
+				this.loadingHistory = true;
 				if (this.rooms[0]) {
-					this.loadingHistory = false;
 					this.getMessagesByChatId(this.rooms[0].roomId);
-					this.loadingHistory = true;
 				}
+				this.loadingHistory = false;
+				console.log(this.loadingHistory)
 			}).catch(error => {
 				console.error(error);
 			});
