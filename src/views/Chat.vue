@@ -27,7 +27,7 @@ export default {
 	},
 	data() {
 		return {
-			currentUserId: 'dcb39623-153f-4647-8b7a-81e5c5f78d19',
+			currentUserId: '78f0343b-2684-44fe-84cb-f05fdaa1e9f0',
 			rooms: [
 			],
 			messages: [],
