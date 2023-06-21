@@ -120,12 +120,12 @@ export default {
 				...this.messages,
 				newMsg
 			]
-			this.loadingHistory = false;
+			this.loadingHistory = true;
 			this.$axios.post('/ai/chat/' + message.roomId + '/message', {
 				message: message.content,
 				userId: this.currentUserId,
 			}).then(response => {
-				console.log(response.data);
+				console.log(this.loadingHistory);
 				const botRes = response.data
 				const botMsg = {
 					_id: this.messages.length,
@@ -134,7 +134,7 @@ export default {
 					timestamp: new Date().toString().substring(16, 21),
 					date: new Date().toDateString()
 				}
-				this.loadingHistory = true;
+				this.loadingHistory = false;
 				this.messages = [
 					...this.messages,
 					botMsg
